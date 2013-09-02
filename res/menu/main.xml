@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_news"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_news"/>
+    <item
+        android:id="@+id/action_agenda"
+        android:orderInCategory="200"
+        android:showAsAction="always"
+        android:title="@string/action_agenda"/>
+    <item
+        android:id="@+id/action_notes"
+        android:orderInCategory="300"
+        android:showAsAction="always"
+        android:title="@string/action_notes"/>
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_menu_settings"
+        android:orderInCategory="400"
+        android:showAsAction="always"
+        android:title="@string/action_settings"/>
+
+</menu>

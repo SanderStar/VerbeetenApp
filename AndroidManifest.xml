@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="nl.ctac.verbeeten"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="17" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="nl.ctac.verbeeten.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="nl.ctac.verbeeten.LoadingActivity" />
+        <activity
+            android:name="nl.ctac.verbeeten.NewsActivity"
+            android:label="@string/title_activity_news" >
+        </activity>
+        <activity
+            android:name="nl.ctac.verbeeten.NotesActivity"
+            android:label="@string/title_activity_notes" >
+        </activity>
+        <activity
+            android:name="nl.ctac.verbeeten.AgendaActivity"
+            android:label="@string/title_activity_agenda" >
+        </activity>
+        <activity
+            android:name="nl.ctac.verbeeten.NoteActivity"
+            android:label="@string/title_activity_note" >
+        </activity>
+        <activity
+            android:name="nl.ctac.verbeeten.BarCodeActivity"
+            android:label="@string/title_activity_bar_code" >
+        </activity>
+    </application>
+
+</manifest>
