@@ -3,13 +3,22 @@ package nl.ctac.verbeeten.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.UnknownHostException;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+
+import android.content.Context;
 
 /**
  * Service for doing backend requests.
@@ -22,14 +31,14 @@ import java.net.UnknownHostException;
  */
 public class BackendService {
 
+	// TODO temp
+	public static Context context;
+
 	/** Request the response in JSON format. */
 	public static final String JSON_FORMAT = "application/json";
 
 	/** Request the response in PLIST format as XML. */
 	public static final String DEFAULT_FORMAT = "";
-
-	/** Request method constant GET. */
-	private static final String REQUEST_METHOD_GET = "GET";
 
 	/** Response code (error code). */
 	private int responseCode;
@@ -45,6 +54,8 @@ public class BackendService {
 
 	/**
 	 * Execute the given URL.
+	 * 
+	 * @param context context
 	 * 
 	 * @param url
 	 *            url to backend service
@@ -73,59 +84,59 @@ public class BackendService {
 	private void exec(String endpoint, String method, String data,
 			String barCode, String format) throws BackendServiceException {
 
-		// TODO needed? System.setProperty("http.keepAlive","false");
-
 		HttpURLConnection conn = null;
 		BufferedReader rd = null;
 		String line;
 		StringBuilder result = new StringBuilder("");
 		try {
-			URL url = new URL(endpoint);
-			conn = (HttpURLConnection) url.openConnection();
-
-			// TODO hardcoded barcode
-			conn.addRequestProperty("barcode", barCode);
-
-			conn.addRequestProperty("Content-type", format);
-			conn.setRequestProperty("Accept", format);
-
+			
+			DefaultHttpClient client = new MyHttpClient(context);
+			HttpParams params = client.getParams();
+			HttpConnectionParams.setConnectionTimeout(params, TIMEOUT);
+		    HttpConnectionParams.setSoTimeout(params, TIMEOUT);
+		    
+			HttpRequestBase httpCall = null;
 			if (method == null || "".equals(method)) {
-				conn.setRequestMethod(REQUEST_METHOD_GET);
+				// Default a http get will be done
+				httpCall = new HttpGet(endpoint);
 			} else {
-				conn.setRequestMethod(method);
+				if (HttpPut.METHOD_NAME.equals(method)) {
+					httpCall = new HttpPut(endpoint);
+				} else if(HttpDelete.METHOD_NAME.equals(method)) {
+					httpCall = new HttpDelete(endpoint);
+				} else if(HttpPost.METHOD_NAME.equals(method)) {
+					// TODO post not used yet?!
+					httpCall = new HttpPost(endpoint);
+				}
 			}
-
-			// set timeout on connection...
-			conn.setReadTimeout(TIMEOUT);
-			conn.setConnectTimeout(TIMEOUT);
-
+			if (httpCall != null) {
+				httpCall.setHeader("barcode", barCode);
+			} else {
+				throw new IllegalArgumentException("No http call created");
+			}
+			httpCall.setHeader("Content-type", format);
+			httpCall.setHeader("Accept", format);
+			
+			HttpResponse getResponse;
 			if (data != null) {
-				conn.setDoOutput(true);
-				conn.setDoInput(true);
-				OutputStreamWriter out = new OutputStreamWriter(
-						conn.getOutputStream());
-				out.write(data);
-				out.flush();
-				out.close();
+				StringEntity entity = new StringEntity(data);
+				if (httpCall instanceof HttpPut) {
+					((HttpPut) httpCall).setEntity(entity);
+				}
+				if (httpCall instanceof HttpPost) {
+					((HttpPost) httpCall).setEntity(entity);
+				}
 			}
-
+			getResponse = client.execute(httpCall);
+			HttpEntity responseEntity = getResponse.getEntity();
+			
 			rd = new BufferedReader(
-					new InputStreamReader(conn.getInputStream()));
+					new InputStreamReader(responseEntity.getContent()));
 			while ((line = rd.readLine()) != null) {
 				result.append(line);
 			}
-
 			response = result.toString();
-		} catch (MalformedURLException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new BackendServiceException(e);
-		} catch (ProtocolException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new BackendServiceException(e);
-		} catch (UnknownHostException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new BackendServiceException(e);
-		} catch (SocketTimeoutException e) {
+		} catch (ClientProtocolException e) {
 			Log.e(TAG, e.getMessage(), e);
 			throw new BackendServiceException(e);
 		} catch (IOException e) {

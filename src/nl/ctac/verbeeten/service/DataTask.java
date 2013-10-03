@@ -18,6 +18,8 @@ public class DataTask extends BackendTask {
 	 */
 	public DataTask(Activity activity) {
 		this.activity = activity;
+		// TODO temp; very ugly!!
+		BackendService.context = activity.getApplicationContext();
 	}
 
 	@Override
@@ -27,6 +29,7 @@ public class DataTask extends BackendTask {
 
 		// Result should be an array of 3 elements
 		if (result != null && result.length == 3) {
+			//TODO succeeded if na barcode in header; json result is stacktrace -> handle that situation
 			if (BackendTask.PROCESSING_SUCCEEDED.equals(result[0])) {
 
 				Intent intent = new Intent(result[1]);

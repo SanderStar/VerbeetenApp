@@ -23,7 +23,7 @@ public class BackendTask extends AsyncTask<Preference, Integer, String[]> {
 
 	// TODO fix url http://CA001471.ctac.local:9999/service/
 	/** URL to DEMO data. */
-	private static final String DEMO_URL = "http://www.star4it.nl/verbeeten/rest/";
+	private static final String DEMO_URL = "https://www.star4it.nl/verbeeten/rest/";
 
 	@Override
 	protected String[] doInBackground(Preference... params) {

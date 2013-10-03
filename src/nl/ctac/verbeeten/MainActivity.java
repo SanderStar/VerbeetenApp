@@ -28,7 +28,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+	
 		// TODO scanning
 		// instantiate UI items
 		scanBtn = (Button) findViewById(R.id.scan_button);
@@ -37,6 +37,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		contentTxt = (TextView) findViewById(R.id.scan_content);
 		barCodeTxt = (TextView) findViewById(R.id.barcode);
 
+		// TODO testing code
+		if (barCodeTxt != null) {
+			String barCode = "123-123-123-123";
+			Model.getInstance().setBarCode(barCode);
+			barCodeTxt.setText(barCode);
+		}
 		// listen for clicks
 		scanBtn.setOnClickListener(this);
 
